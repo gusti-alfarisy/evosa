@@ -2,15 +2,24 @@ import optimizer.sa_standard as meta
 import tensorflow as tf
 import numpy as np
 import time
-from dataset_pool import MALAYA_KEW
 from encoder.tapotl import TLEncoding
 from objective_functions import cf_TAPOTL_10Fold
 import os
 
-# dataset = UBD_BOTANICAL
-dataset = MALAYA_KEW
-dataset.load_dataset()
-dataset.load_data_fold_train_test()
+# ----- Define the dataset here
+from dataset_pool import MALAYA_KEW
+DATASET = MALAYA_KEW
+DATASET.load_dataset()
+DATASET.load_data_fold_train_test()
+# ----- Dataset
+
+# ----- Define the MAX Trial
+MAX_TRIAL = 1
+# -----
+
+# ---- Define total iteration
+ITERATION = 150
+# ----
 
 gpus = tf.config.experimental.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(gpus[0], True)
@@ -25,21 +34,22 @@ def get_predict_data(image_generator):
         return x
 
 
-predict_data = get_predict_data(dataset.test_generator)
+predict_data = get_predict_data(DATASET.test_generator)
 # predict_data = get_predict_data(dataset.val_generator)
 
 
 def cost_function(x):
-    return cf_TAPOTL_10Fold(x, dataset, predict_data)
+    return cf_TAPOTL_10Fold(x, DATASET, predict_data)
     # return cf_TAPOTL_5Fold(x, dataset, predict_data)
 
 
 name_stored = "RES_SA_MALAYA_FIXX"
 machine = os.getenv('COMPUTERNAME')
 
-for i in range(10):
+for i in range(MAX_TRIAL):
+    print(f"Start trial {i + 1}")
     start = time.time()
-    best = meta.SA(max_time=150,
+    best = meta.SA(max_time=ITERATION,
                    Encoder=TLEncoding,
                    Objective=cost_function,
                    lb=TLEncoding().lb,

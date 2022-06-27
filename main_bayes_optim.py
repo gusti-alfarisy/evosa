@@ -3,7 +3,6 @@ from bayes_opt.logger import JSONLogger
 from bayes_opt.event import Events
 import tensorflow as tf
 import numpy as np
-from dataset_pool import MALAYA_KEW
 from encoder.tapotl import TLEncoding
 from objective_functions import cf_TAPOTL_10Fold, restart_memoize
 import os
@@ -11,9 +10,20 @@ import time
 
 from optimizer.sa_standard import Solution2
 
+# ----- Define the dataset here
+from dataset_pool import MALAYA_KEW
 DATASET = MALAYA_KEW
 DATASET.load_dataset()
 DATASET.load_data_fold_train_test()
+# ----- Dataset
+
+# ----- Define the MAX Trial
+MAX_TRIAL = 1
+# -----
+
+# ---- Define total iteration
+ITERATION = 150
+# ----
 
 # dataset.load_dataset(train_name="train_cross", val_name="val_earlystop", test_name=None)
 # dataset.load_data_fold_train()
@@ -47,9 +57,6 @@ COUNTER = 0
 def black_box_function(x1, x2, x3, x4, x5, x6, x7, x8):
     """Function with unknown internals we wish to maximize.
 
-    This is just serving as an example, for all intents and
-    purposes think of the internals of this function, i.e.: the process
-    which generates its output values, as unknown.
     """
 
     return 1/cost_function([x1, x2, x3, x4, x5, x6, x7, x8])['cost']
@@ -73,9 +80,9 @@ optimizer = BayesianOptimization(
 
 name_stored = "RES_BO_MALAYA_FIXX"
 machine = os.getenv('COMPUTERNAME')
-ITER = 150
 
-for i in range(10):
+
+for i in range(MAX_TRIAL):
     restart_memoize()
     optimizer = BayesianOptimization(
         f=black_box_function,
@@ -87,7 +94,7 @@ for i in range(10):
     optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
 
     start = time.time()
-    optimizer.maximize(init_points=2, n_iter=ITER)
+    optimizer.maximize(init_points=2, n_iter=ITERATION)
     end = time.time()
 
 

@@ -18,7 +18,7 @@ MAX_TRIAL = 1
 # -----
 
 # ---- Define total iteration
-ITERATION = 2
+ITERATION = 100
 # ----
 
 def get_predict_data(image_generator):
