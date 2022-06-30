@@ -35,7 +35,7 @@ path/to/image_dir/
 
 ## Transfer Learning Optimization
 
-- --dataset specify the folder of dataset in dataset folder
+- --dataset specify the folder's name of dataset in dataset folder
 - --max_trial specify total run of EvoSA
 - --iter shows the total iteration in EvoSA for each trial
 - --k is the parameter k in k-fold cross validation,  e.g., k = 10 shows 10-fold cross validation.
