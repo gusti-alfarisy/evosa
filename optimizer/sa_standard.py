@@ -1,8 +1,8 @@
 import numpy as np
 
 from encoder.tapotl import TLEncoding
-from my_utils.logger import Logger
-from my_utils.timer import Timer
+from utils.logger import Logger
+from utils.timer import Timer
 import pickle
 
 

@@ -1,4 +1,4 @@
-from my_utils.dataset import DataSet
+from utils.dataset import DataSet
 import os
 
 ROOT = "dataset"

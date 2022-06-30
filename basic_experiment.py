@@ -6,7 +6,7 @@ from tensorflow.python.keras.optimizer_v2.adam import Adam
 
 from dataset_pool import UBD_BOTANICAL_SMALL, UBD_BOTANICAL, VNPLANTS, FOOD101, DEBUG_10FOLD, FOOD101_OSR
 from encoder.tapotl import TLEncoding
-from my_utils.pretrained_model import MobileNetV3Small, MobileNetV3Large, MobileNetV3Large_Softmax
+from utils.pretrained_model import MobileNetV3Small, MobileNetV3Large, MobileNetV3Large_Softmax
 from objective_functions import cf_TAPOTL_10Fold
 
 dataset = FOOD101_OSR

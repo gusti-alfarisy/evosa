@@ -13,7 +13,7 @@ parser.add_argument('--max_trial', type=int, default=1)
 parser.add_argument('--iter', type=int, default=100)
 parser.add_argument('--k', type=int, default=10)
 
-from my_utils.run_first import init_directories
+from utils.run_first import init_directories
 init_directories()
 
 args = parser.parse_args()
