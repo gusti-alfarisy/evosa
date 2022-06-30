@@ -3,16 +3,28 @@ from bayes_opt.logger import JSONLogger
 from bayes_opt.event import Events
 import tensorflow as tf
 import numpy as np
+
 from encoder.tapotl import TLEncoding
 from objective_functions import cf_TAPOTL_10Fold, restart_memoize
+import argparse
 import os
 import time
 
 from optimizer.sa_standard import Solution2
 
+parser = argparse.ArgumentParser(description="Optimizing architecture for transfer learning using EvoSA")
+parser.add_argument('--dataset', type=str, default='MalayaKew')
+parser.add_argument('--max_trial', type=int, default=1)
+parser.add_argument('--iter', type=int, default=150)
+parser.add_argument('--k', type=int, default=10)
+
+from my_utils.run_first import init_directories
+init_directories()
+
+args = parser.parse_args()
 # ----- Define the dataset here
-from dataset_pool import MALAYA_KEW
-DATASET = MALAYA_KEW
+from dataset_pool import get_dataset
+DATASET = get_dataset(args.dataset)
 DATASET.load_dataset()
 DATASET.load_data_fold_train_test()
 # ----- Dataset
@@ -22,7 +34,8 @@ MAX_TRIAL = 1
 # -----
 
 # ---- Define total iteration
-ITERATION = 150
+# Default: 150
+ITERATION = 2
 # ----
 
 # dataset.load_dataset(train_name="train_cross", val_name="val_earlystop", test_name=None)
@@ -42,11 +55,10 @@ predict_data = get_predict_data(DATASET.test_generator)
 def cost_function(x):
     return cf_TAPOTL_10Fold(x, DATASET, predict_data)
 
-
-
 gpus = tf.config.experimental.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(gpus[0], True)
-tf.config.experimental.set_memory_growth(gpus[1], True)
+[tf.config.experimental.set_memory_growth(x, True) for x in gpus]
+
+# tf.config.experimental.set_memory_growth(gpus[1], True)
 
 
 # self.ub = [self.max_neuron, self.max_neuron, self.max_neuron, 11, 11, 11, 10, 31]
@@ -90,7 +102,7 @@ for i in range(MAX_TRIAL):
         random_state=1,
         # verbose=2
     )
-    logger = JSONLogger(path=f"output/bo/{name_stored}_{i+1}.json")
+    logger = JSONLogger(path=f"output/json_bo/{name_stored}_{i+1}.json")
     optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
 
     start = time.time()

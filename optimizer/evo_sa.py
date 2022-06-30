@@ -268,7 +268,7 @@ def EVOSA(max_time,
         children = []
         children_cost = []
         children_solution = []
-        for i in range(2):
+        for j in range(2):
             p_indices = np.arange(4)
             np.random.shuffle(p_indices)
             p1_index = p_indices[0]

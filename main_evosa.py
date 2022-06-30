@@ -5,20 +5,32 @@ from encoder.tapotl import TLEncoding
 from objective_functions import cf_TAPOTL_10Fold, cf_TAPOTL_5Fold, cf_TAPOTL_KFold
 import os
 from optimizer.evo_sa import EVOSA
+import argparse
 
+parser = argparse.ArgumentParser(description="Optimizing architecture for transfer learning using EvoSA")
+parser.add_argument('--dataset', type=str, default='MalayaKew')
+parser.add_argument('--max_trial', type=int, default=1)
+parser.add_argument('--iter', type=int, default=100)
+parser.add_argument('--k', type=int, default=10)
+
+from my_utils.run_first import init_directories
+init_directories()
+
+args = parser.parse_args()
 # ----- Define the dataset here
-from dataset_pool import MALAYA_KEW
-DATASET = MALAYA_KEW
+from dataset_pool import get_dataset
+DATASET = get_dataset(args.dataset)
 DATASET.load_dataset()
 DATASET.load_data_fold_train_test()
 # ----- Dataset
 
-# ----- Define the MAX Trial
-MAX_TRIAL = 1
+# ----- Set the MAX Trial
+MAX_TRIAL = args.max_trial
 # -----
 
-# ---- Define total iteration
-ITERATION = 100
+# ---- Set total iteration
+# Default: 100
+ITERATION = args.iter
 # ----
 
 def get_predict_data(image_generator):
@@ -32,19 +44,13 @@ predict_data = get_predict_data(DATASET.val_generator)
 
 
 def cost_function(x):
-    # 5-fold cross validation
-    # return cf_TAPOTL_5Fold(x, DATASET, predict_data)
-    # k-fold cross validation (k=7)
-    # return cf_TAPOTL_KFold(x, DATASET, predict_data, k=7)
-    return cf_TAPOTL_10Fold(x, DATASET, predict_data)
+    return cf_TAPOTL_KFold(x, DATASET, predict_data, k=args.k)
 
 
 gpus = tf.config.experimental.list_physical_devices('GPU')
+[tf.config.experimental.set_memory_growth(x, True) for x in gpus]
 
-tf.config.experimental.set_memory_growth(gpus[0], True)
-# tf.config.experimental.set_memory_growth(gpus[1], True)
-
-name_stored = "RES_EVOSA_MALAYA"
+name_stored = f"RES_EVOSA_{args.dataset}"
 machine = os.getenv('COMPUTERNAME')
 
 for i in range(MAX_TRIAL):
@@ -55,8 +61,8 @@ for i in range(MAX_TRIAL):
                  Objective=cost_function,
                  lb=TLEncoding().lb,
                  ub=TLEncoding().ub,
-                 log_stored_path=f"{name_stored}_{i+1}.csv",
-                 best_stored_path=f"{name_stored}_{i+1}.obj")
+                 log_stored_path=f"EvoSA_{name_stored}_{i+1}.csv",
+                 best_stored_path=f"EvoSA_{name_stored}_{i+1}.obj")
 
     end = time.time()
 

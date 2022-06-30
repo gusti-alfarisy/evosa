@@ -7,20 +7,12 @@ from objective_functions import cf_TAPOTL_10Fold, fit_kfold_normal, main_cost_kf
     objective_res
 
 gpus = tf.config.experimental.list_physical_devices('GPU')
-print(gpus)
-# tf.config.set_visible_devices(gpus[0], 'GPU')
-# logical_gpus = tf.config.list_logical_devices('GPU')
-# print(logical_gpus)
 tf.config.experimental.set_memory_growth(gpus[0], True)
-tf.config.experimental.set_memory_growth(gpus[1], True)
+# tf.config.experimental.set_memory_growth(gpus[1], True)
 
 dataset = MALAYA_KEW
 dataset.load_dataset()
 dataset.load_data_fold_train_test()
-
-# dataset = VNPLANTS
-# dataset.load_dataset(train_name="train_cross", val_name="val_earlystop", test_name=None)
-# dataset.load_data_fold_train()
 
 dataset.load_dataset()
 dataset.load_data_fold_train_test()
@@ -48,9 +40,7 @@ def average_latency(model, predict_data, n=10, min=0.001, max=0.002):
         model.predict(predict_data)
         t2 = time.time()
         latency = t2 - t1
-        print(f"latency {i}: {latency}")
         if latency > 10:
-            print("latency > 10, continue..")
             continue
 
         penalty_list.append(latency)
@@ -58,23 +48,15 @@ def average_latency(model, predict_data, n=10, min=0.001, max=0.002):
 
     penalty_list = np.array(penalty_list)
     mean = np.mean(penalty_list)
-    print(f"penalty list: {penalty_list}")
-    print(f"len penalty list: {len(penalty_list)}")
+    # print(f"penalty list: {penalty_list}")
+    # print(f"len penalty list: {len(penalty_list)}")
     return min_max_norm(mean, min, max)
 
-# MNetGeneratorTrainbaleOne
-
-# model = MNetGeneratorTrainbaleOne(num_class=dataset.tot_class,
-#                                       ).get_model()
-# model = MNetGeneratorTrainbaleOne(num_class=dataset.tot_class, neuron=[14], activation=['elu']
-#                                       ).get_model_tf()
-# print(f"params: {get_total_params(model)/1_000_000}")
-# print(model.summary())
 
 KFOLD = 10
 PATIENCE = 5
 # 0 36 0 selu sigmoid swish 10 27
-ENCODING = TLEncoding(encoding=[0, 36, 0, 6, 7, 10, 10, 0])
+# ENCODING = TLEncoding(encoding=[0, 36, 0, 6, 7, 10, 10, 0])
 X, Y = dataset.full_data_fold()
 mean_acc_train, mean_acc_val, mean_acc_test, total_params, model, mean_top5_train, mean_top5_val, mean_top5_test = fit_kfold_normal(KFOLD, X, Y, dataset, PATIENCE, return_model=True)
 # mean_acc_train, mean_acc_val, mean_acc_test, total_params, model, mean_top5_train, mean_top5_val, mean_top5_test = fit_kfold_tf(ENCODING, KFOLD, X, Y, dataset, PATIENCE, return_model=True)

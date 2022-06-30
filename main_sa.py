@@ -1,29 +1,40 @@
-import optimizer.sa_standard as meta
+from optimizer.sa_standard import SA
 import tensorflow as tf
 import numpy as np
 import time
 from encoder.tapotl import TLEncoding
-from objective_functions import cf_TAPOTL_10Fold
+from objective_functions import cf_TAPOTL_KFold
 import os
+import argparse
 
+parser = argparse.ArgumentParser(description="Optimizing architecture for transfer learning using EvoSA")
+parser.add_argument('--dataset', type=str, default='MalayaKew')
+parser.add_argument('--max_trial', type=int, default=1)
+parser.add_argument('--iter', type=int, default=150)
+parser.add_argument('--k', type=int, default=10)
+
+from my_utils.run_first import init_directories
+init_directories()
+
+args = parser.parse_args()
 # ----- Define the dataset here
-from dataset_pool import MALAYA_KEW
-DATASET = MALAYA_KEW
+from dataset_pool import get_dataset
+DATASET = get_dataset(args.dataset)
 DATASET.load_dataset()
 DATASET.load_data_fold_train_test()
 # ----- Dataset
 
 # ----- Define the MAX Trial
-MAX_TRIAL = 1
+MAX_TRIAL = args.max_trial
 # -----
 
 # ---- Define total iteration
-ITERATION = 150
+# Default: 150
+ITERATION = args.iter
 # ----
 
 gpus = tf.config.experimental.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(gpus[0], True)
-# tf.config.experimental.set_memory_growth(gpus[1], True)
+[tf.config.experimental.set_memory_growth(x, True) for x in gpus]
 
 print("finishing loading dataset")
 
@@ -34,28 +45,26 @@ def get_predict_data(image_generator):
         return x
 
 
-predict_data = get_predict_data(DATASET.test_generator)
-# predict_data = get_predict_data(dataset.val_generator)
+predict_data = get_predict_data(DATASET.val_generator)
 
 
 def cost_function(x):
-    return cf_TAPOTL_10Fold(x, DATASET, predict_data)
-    # return cf_TAPOTL_5Fold(x, dataset, predict_data)
+    return cf_TAPOTL_KFold(x, DATASET, predict_data, k=args.k)
 
 
-name_stored = "RES_SA_MALAYA_FIXX"
+name_stored = f"RES_SA_{args.dataset}"
 machine = os.getenv('COMPUTERNAME')
 
 for i in range(MAX_TRIAL):
     print(f"Start trial {i + 1}")
     start = time.time()
-    best = meta.SA(max_time=ITERATION,
-                   Encoder=TLEncoding,
-                   Objective=cost_function,
-                   lb=TLEncoding().lb,
-                   ub=TLEncoding().ub,
-                   log_stored_path=f"{name_stored}_{i+1}.csv",
-                   best_stored_path=f"{name_stored}_{i+1}.obj")
+    best = SA(max_time=ITERATION,
+              Encoder=TLEncoding,
+              Objective=cost_function,
+              lb=TLEncoding().lb,
+              ub=TLEncoding().ub,
+              log_stored_path=f"SA_{name_stored}_{i + 1}.csv",
+              best_stored_path=f"SA_{name_stored}_{i + 1}.obj")
 
     end = time.time()
     # res = train_TAPL(dataset, TAPOTLEncoding(encoding=best.p))

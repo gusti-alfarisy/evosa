@@ -108,7 +108,7 @@ def boltzmann_annealing(T0, i):
 def SA(max_time, ttype="iters", Objective=None, T=0.3, Encoder=TLEncoding,
        lb=None, ub=None, log_message=True, log_stored_path="SA_topology.csv",
        best_stored_path="SA.obj"):
-    log_stored_path = f"dataset/logs/sa/{log_stored_path}"
+    log_stored_path = f"output/logs/{log_stored_path}"
 
     fc = Encoder()
     res = Objective(fc.encoding)
@@ -183,5 +183,5 @@ def SA(max_time, ttype="iters", Objective=None, T=0.3, Encoder=TLEncoding,
         log.save_csv(log_stored_path)
         t.next()
 
-    save_pickle(best_solution, f"dataset/saved_objects/sa/{best_stored_path}")
+    save_pickle(best_solution, f"output/saved_objects/{best_stored_path}")
     return best_solution
