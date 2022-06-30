@@ -47,13 +47,13 @@ python main_evosa.py --dataset MalayaKew --max_trial 1 --iter 100 --k 10
 ### Simulated Annealing (SA)
 
 ```angular2html
-python main_sa.py --dataset MalayaKew --max_trial 1 --iter 100 --k 10
+python main_sa.py --dataset MalayaKew --max_trial 1 --iter 150 --k 10
 ```
 
 ### Bayesian Optimization
 
 ```angular2html
-python main_bayes_optim.py --dataset MalayaKew --max_trial 1 --iter 100 --k 10
+python main_bayes_optim.py --dataset MalayaKew --max_trial 1 --iter 150 --k 10
 ```
 
 For citation:
