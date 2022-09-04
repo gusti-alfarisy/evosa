@@ -58,16 +58,16 @@ python main_bayes_optim.py --dataset MalayaKew --max_trial 1 --iter 150 --k 10
 
 For citation:
 ```
-@inproceedings{AlfarisyEvoSA2022InPress,
-  author={Alfarisy, Gusti Ahmad Fanshuri and Malik, Owais Ahmed and Hong, Ong Wee},
-  booktitle={2022 IEEE International Conference on Computational Intelligence and Virtual Environments for Measurement Systems and Applications (CIVEMSA)}, 
-  title={Evolutionary Simulated Annealing for Transfer Learning Optimization in Plant-Species Identification Domain}, 
-  year={\noop{2022}in press},
-  volume={},
-  number={},
-  pages={},
-  doi={}
- }
+ 
+ @INPROCEEDINGS{AlfarisyEvoSA2022,  
+ author={Ahmad Fanshuri Alfarisy, Gusti and Ahmed Malik, Owais and Wee Hong, Ong},  
+ booktitle={2022 IEEE 9th International Conference on Computational Intelligence and Virtual Environments for Measurement Systems and Applications (CIVEMSA)},   
+ title={Evolutionary Simulated Annealing for Transfer Learning Optimization in Plant-Species Identification Domain},   
+ year={2022},  
+ volume={},  
+ number={},  
+ ages={1-6},  
+ doi={10.1109/CIVEMSA53371.2022.9853679}}
 ```
 
 ## Further Support
